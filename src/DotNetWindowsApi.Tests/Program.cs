@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DotNetWindowsApi.Core;
+using System;
 
 namespace DotNetWindowsApi.Tests
 {
@@ -6,7 +7,16 @@ namespace DotNetWindowsApi.Tests
     {
         private static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            WindowManager windowManager = new WindowManager();
+
+            IntPtr window = windowManager.FindWindow("", "");
+            IntPtr childOfWindow = windowManager.FindChildWindow(IntPtr.Zero, IntPtr.Zero, "", "");
+
+            IntPtr desktop = windowManager.GetRootDesktopWindow();
+            IntPtr shell = windowManager.GetRootShellWindow();
+            IntPtr active = windowManager.GetActiveWindow();
+
+            Rect windowRect = windowManager.GetWindowPosition(IntPtr.Zero);
         }
     }
 }
