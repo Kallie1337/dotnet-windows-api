@@ -3,45 +3,93 @@ using System.Runtime.InteropServices;
 
 namespace DotNetWindowsApi.Core
 {
+    public static class WindowManagerDependencies
+    {
+        [DllImport("user32.dll")] public static extern IntPtr GetDesktopWindow();
+        [DllImport("user32.dll")] public static extern IntPtr GetShellWindow();
+        [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
+        [DllImport("user32.dll")] public static extern IntPtr FindWindowA(string lpClassName, string lpWindowName);
+        [DllImport("user32.dll")] public static extern IntPtr FindWindowExA(IntPtr hWndParent, IntPtr hWndChildAfter, string lpszClass, string lpszWindow);
+        [DllImport("user32.dll")] public static extern bool GetClientRect(IntPtr hWnd, ref Rect lpRect);
+        [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr hWnd, ref Rect lpRect);
+        [DllImport("user32.dll")] public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, ulong uFlag);
+        [DllImport("user32.dll")] public static extern bool CloseWindow(IntPtr hWnd);
+
+        public struct WindowZOrder
+        {
+            public static readonly IntPtr HWND_BOTTOM = new IntPtr(1);
+            public static readonly IntPtr HWND_TOP = new IntPtr(0);
+            public static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
+        }
+
+        public struct WindowSizingAndPositioningFlags
+        {
+            public static readonly ulong SWP_ASYNCWINDOWPOS = 0x4000;
+            public static readonly ulong SWP_DEFERERASE = 0x2000;
+            public static readonly ulong SWP_DRAWFRAME = 0x0020;
+            public static readonly ulong SWP_FRAMECHANGED = 0x0020;
+            public static readonly ulong SWP_HIDEWINDOW = 0x0080;
+            public static readonly ulong SWP_NOACTIVATE = 0x0010;
+            public static readonly ulong SWP_NOCOPYBITS = 0x0100;
+            public static readonly ulong SWP_NOMOVE = 0x0002;
+            public static readonly ulong SWP_NOOWNERZORDER = 0x0200;
+            public static readonly ulong SWP_NOREDRAW = 0x0008;
+            public static readonly ulong SWP_NOREPOSITION = 0x0200;
+            public static readonly ulong SWP_NOSENDCHANGING = 0x0400;
+            public static readonly ulong SWP_NOSIZE = 0x0001;
+            public static readonly ulong SWP_NOZORDER = 0x0004;
+            public static readonly ulong SWP_SHOWWINDOW = 0x0040;
+        }
+    }
     public class WindowManager
     {
-        [DllImport("user32.dll")] private static extern IntPtr GetDesktopWindow();
-        [DllImport("user32.dll")] private static extern IntPtr GetShellWindow();
-        [DllImport("user32.dll")] private static extern IntPtr GetForegroundWindow();
-        [DllImport("user32.dll")] private static extern IntPtr FindWindowA(string lpClassName, string lpWindowName);
-        [DllImport("user32.dll")] private static extern IntPtr FindWindowExA(IntPtr hWndParent, IntPtr hWndChildAfter, string lpszClass, string lpszWindow);
-        [DllImport("user32.dll")] private static extern bool GetClientRect(IntPtr hWnd, ref Rect lpRect);
-
-        public IntPtr GetRootDesktopWindow()
+        public IntPtr GetDesktopWindow()
         {
-            return GetDesktopWindow();
+            return WindowManagerDependencies.GetDesktopWindow();
         }
 
-        public IntPtr GetRootShellWindow()
+        public IntPtr GetShellWindow()
         {
-            return GetShellWindow();
+            return WindowManagerDependencies.GetShellWindow();
         }
 
-        public IntPtr GetActiveWindow()
+        public IntPtr GetForegroundWindow()
         {
-            return GetForegroundWindow();
+            return WindowManagerDependencies.GetForegroundWindow();
         }
 
         public IntPtr FindWindow(string className, string windowTitle)
         {
-            return FindWindowA(className, windowTitle);
+            return WindowManagerDependencies.FindWindowA(className, windowTitle);
         }
 
         public IntPtr FindChildWindow(IntPtr parentWindow, IntPtr firstChildWindow, string className, string windowTitle)
         {
-            return FindWindowExA(parentWindow, firstChildWindow, className, windowTitle);
+            return WindowManagerDependencies.FindWindowExA(parentWindow, firstChildWindow, className, windowTitle);
         }
 
-        public Rect GetWindowPosition(IntPtr window)
+        public Rect GetClientRect(IntPtr window)
         {
             Rect rect = new Rect();
-            GetClientRect(window, ref rect);
+            WindowManagerDependencies.GetClientRect(window, ref rect);
             return rect;
+        }
+
+        public Rect GetWindowRect(IntPtr window)
+        {
+            Rect rect = new Rect();
+            WindowManagerDependencies.GetWindowRect(window, ref rect);
+            return rect;
+        }
+
+        public bool SetWindowPos(IntPtr window, IntPtr zOrder, int x, int y, int w, int h, ulong adds)
+        {
+            return WindowManagerDependencies.SetWindowPos(window, zOrder, x, y, w, h, adds);
+        }
+
+        public bool MinimizeWindow(IntPtr window)
+        {
+            return WindowManagerDependencies.CloseWindow(window);
         }
     }
 }
