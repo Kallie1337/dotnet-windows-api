@@ -8,26 +8,20 @@ namespace DotNetWindowsApi.Tests
         private static void Main(string[] args)
         {
             WindowManager windowManager = new WindowManager();
-            DpiManager dpiManager = new DpiManager();
 
-            IntPtr window = windowManager.FindWindow("CabinetWClass", "This PC");
-            IntPtr childOfWindow = windowManager.FindChildWindow(IntPtr.Zero, IntPtr.Zero, "", "");
+            var window = windowManager.FindWindow("CabinetWClass", "This PC");
+            var windowChild = windowManager.FindChildWindow(window, IntPtr.Zero, "", "");
+            var desktop = windowManager.GetDesktopWindow();
+            var shell = windowManager.GetShellWindow();
+            var foreground = windowManager.GetForegroundWindow();
 
-            IntPtr desktop = windowManager.GetDesktopWindow();
-            IntPtr shell = windowManager.GetShellWindow();
+            var windowRect = windowManager.GetWindowRect(window);
+            var clientRect = windowManager.GetClientRect(window);
 
-            Rect windowRect = windowManager.GetWindowRect(window);
-            Rect clientRect = windowManager.GetClientRect(window);
+            var x = windowManager.SetWindowPos(window, WindowManagerDependencies.WindowZOrder.HWND_TOPMOST, 0, 0, 200, 200,
+                WindowManagerDependencies.WindowSizingAndPositioningFlags.SWP_SHOWWINDOW);
 
-            Console.WriteLine($"{windowRect.left} {windowRect.right} {windowRect.top} {windowRect.bottom}");
-            Console.WriteLine($"{clientRect.left} {clientRect.right} {clientRect.top} {clientRect.bottom}");
-
-            windowManager.SetWindowPos(window, WindowManagerDependencies.WindowZOrder.HWND_TOPMOST, 0, 0, 800, WindowManagerDependencies.WindowSizingAndPositioningFlags.SWP_ASYNCWINDOWPOS);
-
-            int dpi = dpiManager.GetWindowDpi(window);
-
-            Console.WriteLine(dpi);
-
+            windowManager.MinimizeWindow(window);
         }
     }
 }
